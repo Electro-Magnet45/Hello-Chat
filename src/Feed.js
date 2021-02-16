@@ -4,7 +4,7 @@ import Post from "./Post";
 import "./Feed.css";
 import FlipMove from "react-flip-move";
 
-function Feed({ posts, setPosts }) {
+function Feed({ posts }) {
   return (
     <div className="feed">
       <div className="feed__header">

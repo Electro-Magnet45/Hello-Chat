@@ -34,7 +34,7 @@ function Home() {
   return (
     <div className="home">
       <Sidebar />
-      {messages && <Feed posts={messages} setPosts={setMessages} />}
+      {messages && <Feed posts={messages} />}
       <Widgets />
     </div>
   );

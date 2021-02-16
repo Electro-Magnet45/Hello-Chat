@@ -3,21 +3,22 @@ import "./TweetBox.css";
 import { Avatar, Button } from "@material-ui/core";
 import axios from "axios";
 
-function TweetBox() {
+function TweetBox({ userData }) {
   const [tweetMessage, setTweetMessage] = useState("");
   const [files, setFiles] = useState("");
+
+  var userData = JSON.parse(localStorage.getItem("userData"));
 
   var formData = new FormData();
 
   function insertToFirebase(tweetImage) {
     axios
       .post("api/new", {
-        displayName: "Aswin A",
-        userName: "aswina@aswin",
-        verified: true,
+        displayName: userData.displayName,
+        userName: userData.userName,
+        verified: userData.verified,
         text: tweetMessage,
-        avatar:
-          "https://miro.medium.com/max/1200/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg",
+        avatar: userData.avatar,
         image: tweetImage,
       })
       .then(() => {
@@ -27,24 +28,28 @@ function TweetBox() {
 
   const sendTweet = (e) => {
     e.preventDefault();
+    if (files[0]) {
+      formData.append("file", files[0]);
 
-    formData.append("file", files[0]);
+      formData.append("upload_preset", "j2cq4uw4");
+      const options = {
+        method: "POST",
+        body: formData,
+      };
 
-    formData.append("upload_preset", "j2cq4uw4");
-    const options = {
-      method: "POST",
-      body: formData,
-    };
-
-    fetch("https://api.Cloudinary.com/v1_1/drcxef0qi/image/upload", options)
-      .then((res) => res.json())
-      .then((res) => {
-        var tweetImage = res.secure_url;
-        insertToFirebase(tweetImage);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      fetch("https://api.Cloudinary.com/v1_1/drcxef0qi/image/upload", options)
+        .then((res) => res.json())
+        .then((res) => {
+          var tweetImage = res.secure_url;
+          insertToFirebase(tweetImage);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      var tweetImage = "";
+      insertToFirebase(tweetImage);
+    }
   };
 
   return (
