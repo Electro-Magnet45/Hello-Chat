@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./TweetBox.css";
 import { Avatar, Button } from "@material-ui/core";
-import { db } from "./firebase";
+import axios from "axios";
 
 function TweetBox() {
   const [tweetMessage, setTweetMessage] = useState("");
@@ -10,17 +10,19 @@ function TweetBox() {
   var formData = new FormData();
 
   function insertToFirebase(tweetImage) {
-    db.collection("posts").add({
-      displayName: "rafeh",
-      userName: "clever",
-      verified: true,
-      text: tweetMessage,
-      image: tweetImage,
-      avatar:
-        "https://cdn.pixabay.com/photo/2015/03/26/09/47/sky-690293__340.jpg",
-    });
-
-    setTweetMessage("");
+    axios
+      .post("api/new", {
+        displayName: "Aswin A",
+        userName: "aswina@aswin",
+        verified: true,
+        text: tweetMessage,
+        avatar:
+          "https://miro.medium.com/max/1200/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg",
+        image: tweetImage,
+      })
+      .then(() => {
+        setTweetMessage("");
+      });
   }
 
   const sendTweet = (e) => {

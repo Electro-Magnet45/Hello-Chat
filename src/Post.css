@@ -3,11 +3,13 @@
   align-items: flex-start;
   border-bottom: 1px solid var(--twitter-background);
   padding-bottom: 10px;
+  max-width: 700px;
 }
 
 .post__body {
   flex: 1;
   padding: 10px;
+  max-width: 610px;
 }
 
 .post__body > img {
@@ -18,11 +20,13 @@
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  max-width: 697px;
 }
 
 .post__headerDescription {
   margin-bottom: 10px;
   font-size: 15px;
+  word-wrap: break-word;
 }
 
 .post__headerText > h3 {
@@ -43,4 +47,9 @@
 
 .post__avatar {
   padding: 20px;
+}
+
+.post__bodyImage {
+  max-height: 600px;
+  max-width: 600px;
 }

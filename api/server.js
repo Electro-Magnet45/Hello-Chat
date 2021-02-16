@@ -31,8 +31,6 @@ mongoose.connect(connection_url, {
 const db = mongoose.connection;
 
 db.once("open", () => {
-  console.log("db is connected");
-
   const msgCollection = db.collection("messagecontents");
   const changeStream = msgCollection.watch();
 
