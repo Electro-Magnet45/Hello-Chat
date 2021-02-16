@@ -1,0 +1,58 @@
+.login {
+  background-color: var(--twitter-color);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+}
+
+.login__twitterIcon {
+  color: white;
+  height: 50vh !important;
+  width: 50vw !important;
+  align-self: center;
+  justify-self: center;
+}
+
+.formContainer {
+  margin: 100px;
+}
+
+.loginContainer {
+  position: absolute;
+  top: 20%;
+  right: 0px;
+  background-color: white;
+  height: fit-content;
+  width: fit-content;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  margin-right: 40px;
+}
+
+.loginContainer > h1 {
+  position: relative;
+  top: 10%;
+  text-align: center;
+  color: var(--twitter-color);
+  font-family: "Poppins", sans-serif;
+  font-size: 60px;
+}
+
+.emailInputForm {
+  margin: 1px;
+  width: 25ch;
+}
+
+.emailInput {
+  border-color: var(--twitter-color);
+  outline-color: var(--twitter-color);
+  padding-bottom: 10px !important;
+}
+
+.registerButton {
+  margin-top: 40px !important;
+  margin-bottom: 0px !important;
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+  justify-self: center;
+}

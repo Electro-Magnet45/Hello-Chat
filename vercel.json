@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "public": false,
+  "builds": [
+    { "src": "package.json", "use": "@now/static-build" },
+    { "src": "/api/server.js", "use": "@now/node-server" }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/server.js" },
+    { "source": "(.*)", "destination": "/index.html" }
+  ]
+}
