@@ -35,19 +35,21 @@ function Home() {
 
   useEffect(() => {
     if (shouldStart) {
-      const pusher = new Pusher("f2ccd03741a0cd0d0545", {
-        cluster: "ap2",
-      });
+      if (messages) {
+        const pusher = new Pusher("f2ccd03741a0cd0d0545", {
+          cluster: "ap2",
+        });
 
-      const channel = pusher.subscribe("messages");
-      channel.bind("inserted", (newMessage) => {
-        setMessages([...messages, newMessage]);
-      });
+        const channel = pusher.subscribe("messages");
+        channel.bind("inserted", (newMessage) => {
+          setMessages([...messages, newMessage]);
+        });
 
-      return () => {
-        channel.unbind_all();
-        channel.unsubscribe();
-      };
+        return () => {
+          channel.unbind_all();
+          channel.unsubscribe();
+        };
+      }
     }
   }, [shouldStart, messages]);
 
