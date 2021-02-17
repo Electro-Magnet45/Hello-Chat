@@ -41,7 +41,7 @@ function Home() {
 
       const channel = pusher.subscribe("messages");
       channel.bind("inserted", (newMessage) => {
-        setMessages([...messages, newMessage]);
+        alert(newMessage);
       });
 
       return () => {
