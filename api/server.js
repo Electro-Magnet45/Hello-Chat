@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import Messages from "./dbTweets.js";
+import Users from "./dbUser.js";
 import Pusher from "pusher";
 import cors from "cors";
 
@@ -70,6 +71,18 @@ app.post("/api/new", (req, res) => {
       res.status(500).send(err);
     } else {
       res.status(201).send(data);
+    }
+  });
+});
+
+app.post("/api/findUser", (req, res) => {
+  const queryId = req.body;
+
+  Users.findOne({ userId: queryId.userId }, (err, doc) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(doc);
     }
   });
 });

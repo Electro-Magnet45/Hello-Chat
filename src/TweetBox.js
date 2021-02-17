@@ -2,12 +2,39 @@ import React, { useState } from "react";
 import "./TweetBox.css";
 import { Avatar, Button } from "@material-ui/core";
 import axios from "axios";
+import { firebase } from "./firebase";
 
 function TweetBox({ userData }) {
   const [tweetMessage, setTweetMessage] = useState("");
   const [files, setFiles] = useState("");
 
-  var userData = JSON.parse(localStorage.getItem("userData"));
+  var userId;
+  var userData;
+  var shouldGetUserId = true;
+
+  firebase.auth().onAuthStateChanged(function (user) {
+    userId = user.uid;
+
+    userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData) {
+      console.log(userId);
+      if (shouldGetUserId === true) {
+        shouldGetUserId = false;
+        axios
+          .post("api/findUser", {
+            userId: userId,
+          })
+          .then((response) => {
+            let userData = response.data;
+            localStorage.setItem("userData", JSON.stringify(userData));
+            userData = JSON.parse(localStorage.getItem("userData"));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
+  });
 
   var formData = new FormData();
 
