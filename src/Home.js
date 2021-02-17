@@ -34,22 +34,20 @@ function Home() {
   }, [shouldStart]);
 
   useEffect(() => {
-    if (shouldStart) {
-      const pusher = new Pusher("f2ccd03741a0cd0d0545", {
-        cluster: "ap2",
-      });
+    const pusher = new Pusher("f2ccd03741a0cd0d0545", {
+      cluster: "ap2",
+    });
 
-      const channel = pusher.subscribe("messages");
-      channel.bind("inserted", (newMessage) => {
-        setMessages([...messages, newMessage]);
-      });
+    const channel = pusher.subscribe("messages");
+    channel.bind("inserted", (newMessage) => {
+      alert(newMessage);
+    });
 
-      return () => {
-        channel.unbind_all();
-        channel.unsubscribe();
-      };
-    }
-  }, [shouldStart, messages]);
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [messages]);
 
   return (
     <div className="home">
