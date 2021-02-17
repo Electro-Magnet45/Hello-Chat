@@ -1,3 +1,14 @@
+::-moz-selection {
+  /* Code for Firefox */
+  background: white;
+  color: #50b7f5;
+}
+
+::selection {
+  background: white;
+  color: #50b7f5;
+}
+
 body {
   --twitter-color: #50b7f5;
   --twitter-background: #e6ecf0;
