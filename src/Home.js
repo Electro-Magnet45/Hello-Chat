@@ -18,6 +18,17 @@ function Home() {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
         setShouldStart(true);
+        const pusher = new Pusher("f2ccd03741a0cd0d0545", {
+          cluster: "ap2",
+        });
+        const channel = pusher.subscribe("messages");
+        channel.bind("inserted", function (newMessage) {
+          setMessages([...messages, newMessage]);
+        });
+        return () => {
+          channel.unbind_all();
+          channel.unsubscribe();
+        };
       } else {
         setShouldStart(false);
         history.push("/");
@@ -32,21 +43,6 @@ function Home() {
       });
     }
   }, [shouldStart]);
-
-  useEffect(() => {
-    const pusher = new Pusher("f2ccd03741a0cd0d0545", {
-      cluster: "ap2",
-    });
-    const channel = pusher.subscribe("messages");
-    channel.bind("inserted", function (newMessage) {
-      alert(newMessage);
-    });
-
-    return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-    };
-  }, [messages]);
 
   return (
     <div className="home">
