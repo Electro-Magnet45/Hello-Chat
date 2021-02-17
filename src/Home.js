@@ -11,6 +11,10 @@ import Widgets from "./Widgets";
 function Home() {
   var history = useHistory();
 
+  const pusher = new Pusher("f2ccd03741a0cd0d0545", {
+    cluster: "ap2",
+  });
+
   const [shouldStart, setShouldStart] = useState(false);
   const [messages, setMessages] = useState([]);
 
@@ -34,21 +38,15 @@ function Home() {
   }, [shouldStart]);
 
   useEffect(() => {
-    if (messages) {
-      const pusher = new Pusher("f2ccd03741a0cd0d0545", {
-        cluster: "ap2",
-      });
+    const channel = pusher.subscribe("messages");
+    channel.bind("inserted", (newMessage) => {
+      alert(newMessage);
+    });
 
-      const channel = pusher.subscribe("messages");
-      channel.bind("inserted", (newMessage) => {
-        alert(newMessage);
-      });
-
-      return () => {
-        channel.unbind_all();
-        channel.unsubscribe();
-      };
-    }
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
   }, [messages]);
 
   return (
