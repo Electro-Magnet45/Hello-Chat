@@ -4,7 +4,7 @@ import { Avatar, Button } from "@material-ui/core";
 import axios from "axios";
 import { firebase } from "./firebase";
 
-function TweetBox({ userData }) {
+function TweetBox() {
   const [tweetMessage, setTweetMessage] = useState("");
   const [files, setFiles] = useState("");
 

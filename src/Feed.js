@@ -13,7 +13,27 @@ function Feed({ posts }) {
 
       <TweetBox />
 
-      <FlipMove>
+      <FlipMove
+        staggerDelayBy={150}
+        enterAnimation={{
+          from: {
+            transform: "rotateX(180deg)",
+            opacity: 0.1,
+          },
+          to: {
+            transform: "",
+          },
+        }}
+        leaveAnimation={{
+          from: {
+            transform: "",
+          },
+          to: {
+            transform: "rotateX(-120deg)",
+            opacity: 0.1,
+          },
+        }}
+      >
         {posts &&
           posts.map((post) => {
             return (

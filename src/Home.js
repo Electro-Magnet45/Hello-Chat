@@ -1,35 +1,55 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import "./Home.css";
 import Pusher from "pusher-js";
 import axios from "./axios";
+import { firebase } from "./firebase";
 import Sidebar from "./Sidebar";
 import Feed from "./Feed";
 import Widgets from "./Widgets";
 
 function Home() {
+  var history = useHistory();
+
+  const [shouldStart, setShouldStart] = useState(false);
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    axios.get("api/sync").then((response) => {
-      setMessages(response.data);
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        setShouldStart(true);
+      } else {
+        setShouldStart(false);
+        history.push("/");
+      }
     });
   }, []);
 
   useEffect(() => {
-    const pusher = new Pusher("f2ccd03741a0cd0d0545", {
-      cluster: "ap2",
-    });
+    if (shouldStart) {
+      axios.get("api/sync").then((response) => {
+        setMessages(response.data);
+      });
+    }
+  }, [shouldStart]);
 
-    const channel = pusher.subscribe("messages");
-    channel.bind("inserted", (newMessage) => {
-      setMessages([...messages, newMessage]);
-    });
+  useEffect(() => {
+    if (shouldStart) {
+      const pusher = new Pusher("f2ccd03741a0cd0d0545", {
+        cluster: "ap2",
+      });
 
-    return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-    };
-  }, [messages]);
+      const channel = pusher.subscribe("messages");
+      channel.bind("inserted", (newMessage) => {
+        setMessages([...messages, newMessage]);
+      });
+
+      return () => {
+        channel.unbind_all();
+        channel.unsubscribe();
+      };
+    }
+  }, [shouldStart, messages]);
 
   return (
     <div className="home">

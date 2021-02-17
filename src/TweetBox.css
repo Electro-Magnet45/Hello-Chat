@@ -24,7 +24,7 @@
 
 .tweetBox > form > input {
   padding: 10px;
-  border: none;
+  border: none !important;
   outline: none;
   background-color: #81ecec;
   transition: 1s;
