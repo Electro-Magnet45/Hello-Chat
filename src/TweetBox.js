@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./TweetBox.css";
 import { Avatar, Button } from "@material-ui/core";
 import axios from "axios";
-import { firebase } from "./firebase";
+import { db, firebase, forDate } from "./firebase";
 
 function TweetBox() {
   const [tweetMessage, setTweetMessage] = useState("");
@@ -39,14 +39,15 @@ function TweetBox() {
   var formData = new FormData();
 
   function insertToFirebase(tweetImage) {
-    axios
-      .post("api/new", {
+    db.collection("posts")
+      .add({
         displayName: userData.displayName,
         userName: userData.userName,
         verified: userData.verified,
         text: tweetMessage,
         avatar: userData.avatar,
         image: tweetImage,
+        timeStamp: forDate.FieldValue.serverTimestamp(),
       })
       .then(() => {
         setTweetMessage("");

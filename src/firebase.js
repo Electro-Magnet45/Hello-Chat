@@ -14,5 +14,6 @@ if (!firebase.apps.length) {
 }
 
 const db = firebase.firestore();
+var forDate = firebase.firestore;
 
-export { db, firebase };
+export { db, firebase, forDate };
