@@ -40,7 +40,7 @@ function Home() {
       channel.unbind_all();
       channel.unsubscribe();
     };
-  }, []);
+  }, [messages]);
 
   useEffect(() => {
     if (shouldStart) {
