@@ -31,9 +31,22 @@ mongoose.connect(connection_url, {
 
 const db = mongoose.connection;
 
-db.once("open", () => {
-  const msgCollection = db.collection("messagecontents");
-  const changeStream = msgCollection.watch();
+Messages.watch().on("change", (change) => {
+  if (change.operationType === "insert") {
+    const messageDetails = change.fullDocument;
+    pusher.trigger("messages", "inserted", {
+      displayName: messageDetails.displayName,
+      userName: messageDetails.userName,
+      verified: messageDetails.verified,
+      text: messageDetails.text,
+      avatar: messageDetails.avatar,
+      image: messageDetails.image,
+    });
+  }
+});
+
+/* db.once("open", () => {
+  
 
   changeStream.on("change", (change) => {
     if (change.operationType === "insert") {
@@ -50,7 +63,7 @@ db.once("open", () => {
       console.log("Error occured");
     }
   });
-});
+}); */
 
 // API calls
 
