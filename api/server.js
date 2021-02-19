@@ -96,7 +96,7 @@ app.post("/api/insertUser", (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(200).send(data);
+      res.status(201).send(data);
     }
   });
 });
@@ -106,7 +106,7 @@ app.get("/api/deleteMessages", (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(201).send(data);
+      res.status(200).send(data);
     }
   });
 });
@@ -115,7 +115,7 @@ app.get("/api/deleteUsers", (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(201).send(data);
+      res.status(200).send(data);
     }
   });
 });
