@@ -89,4 +89,16 @@ app.post("/api/findUser", (req, res) => {
   });
 });
 
+app.post("/api/insertUser", (req, res) => {
+  const userData = req.body;
+
+  Users.create(userData, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(201).send(data);
+    }
+  });
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
