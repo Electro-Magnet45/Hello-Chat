@@ -16,7 +16,7 @@ function Home() {
   const [messages, setMessages] = useState([]);
 
   const checkForUpdates = () => {
-    URL = "ws://hello-chat.vercel.app:8080/";
+    URL = "wss://hello-chat.vercel.app/";
     setws(new WebSocket(URL));
   };
 
