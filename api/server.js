@@ -3,23 +3,29 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import Messages from "./dbTweets.js";
 import Users from "./dbUser.js";
-import Pusher from "pusher";
 import cors from "cors";
+import WebSocket from "ws";
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-const pusher = new Pusher({
-  appId: "1155160",
-  key: "f2ccd03741a0cd0d0545",
-  secret: "8282efa822a6efe71ce2",
-  cluster: "ap2",
-  useTLS: true,
-});
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+const wss = new WebSocket.Server({ port: port });
+var wsocket = null;
+
+wss.on("connection", function connection(ws) {
+  wsocket = ws;
+  ws.on("message", function incoming(data) {
+    wss.clients.forEach(function each(client) {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
+  });
+});
 
 const connection_url =
   "mongodb+srv://admin:admin@cluster0.hec08.mongodb.net/posts?retryWrites=true&w=majority";
@@ -34,45 +40,41 @@ const db = mongoose.connection;
 Messages.watch().on("change", (change) => {
   if (change.operationType === "insert") {
     const messageDetails = change.fullDocument;
-    pusher.trigger("messages", "inserted", {
-      displayName: messageDetails.displayName,
-      userName: messageDetails.userName,
-      verified: messageDetails.verified,
-      text: messageDetails.text,
-      avatar: messageDetails.avatar,
-      image: messageDetails.image,
-    });
-  }
-});
-
-/* db.once("open", () => {
-  
-
-  changeStream.on("change", (change) => {
-    if (change.operationType === "insert") {
-      const messageDetails = change.fullDocument;
-      pusher.trigger("messages", "inserted", {
+    wsocket.send(
+      JSON.stringify({
         displayName: messageDetails.displayName,
         userName: messageDetails.userName,
         verified: messageDetails.verified,
         text: messageDetails.text,
         avatar: messageDetails.avatar,
         image: messageDetails.image,
-      });
-    } else {
-      console.log("Error occured");
-    }
-  });
-}); */
+      })
+    );
+  }
+});
 
 // API calls
 
 app.get("/api/sync", (req, res) => {
-  Messages.find((err, data) => {
+  Messages.find({})
+    .sort({ time: "descending" })
+    .exec((err, data) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(200).send(data);
+      }
+    });
+});
+
+app.post("/api/new", (req, res) => {
+  const dbMessage = req.body;
+
+  Messages.create(dbMessage, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(200).send(data);
+      res.status(201).send(data);
     }
   });
 });
@@ -110,6 +112,7 @@ app.get("/api/deleteMessages", (req, res) => {
     }
   });
 });
+
 app.get("/api/deleteUsers", (req, res) => {
   Users.deleteMany((err, data) => {
     if (err) {

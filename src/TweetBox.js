@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./TweetBox.css";
 import { Avatar, Button } from "@material-ui/core";
 import axios from "axios";
-import { db, firebase, forDate } from "./firebase";
+import { firebase } from "./firebase";
 
 function TweetBox() {
   const [tweetMessage, setTweetMessage] = useState("");
@@ -39,8 +39,21 @@ function TweetBox() {
 
   var formData = new FormData();
 
-  function insertToFirebase(tweetImage) {
-    db.collection("posts")
+  function insertToDatabase(tweetImage) {
+    axios
+      .post("api/new", {
+        displayName: userData.displayName,
+        userName: userData.userName,
+        verified: userData.verified,
+        text: tweetMessage,
+        avatar: userData.avatar,
+        image: tweetImage,
+      })
+      .then(() => {
+        setTweetMessage("");
+      });
+
+    /* db.collection("posts")
       .add({
         displayName: userData.displayName,
         userName: userData.userName,
@@ -52,7 +65,7 @@ function TweetBox() {
       })
       .then(() => {
         setTweetMessage("");
-      });
+      }); */
   }
 
   const sendTweet = (e) => {
@@ -70,21 +83,21 @@ function TweetBox() {
         .then((res) => res.json())
         .then((res) => {
           var tweetImage = res.secure_url;
-          insertToFirebase(tweetImage);
+          insertToDatabase(tweetImage);
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
       var tweetImage = "";
-      insertToFirebase(tweetImage);
+      insertToDatabase(tweetImage);
     }
   };
 
   useEffect(() => {
     setTimeout(() => {
       setShowAvatar(true);
-    }, 2000);
+    }, 1000);
   }, []);
 
   return (

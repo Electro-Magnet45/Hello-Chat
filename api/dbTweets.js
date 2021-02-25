@@ -7,6 +7,7 @@ const tweetSchema = mongoose.Schema({
   text: String,
   avatar: String,
   image: String,
+  time: { type: Date, default: Date.now },
 });
 
 export default mongoose.model("messagecontents", tweetSchema);

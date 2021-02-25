@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./Home.css";
-import Pusher from "pusher-js";
 import axios from "./axios";
-import { db, firebase, forDate } from "./firebase";
+import { firebase } from "./firebase";
 import Sidebar from "./Sidebar";
 import Feed from "./Feed";
 import Widgets from "./Widgets";
 
 function Home() {
   var history = useHistory();
+  var URL = null;
+  const [ws, setws] = useState(null);
 
   const [shouldStart, setShouldStart] = useState(false);
   const [messages, setMessages] = useState([]);
+
+  const checkForUpdates = () => {
+    URL = "ws://hello-chat.vercel.app";
+    setws(new WebSocket(URL));
+  };
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
         setShouldStart(true);
-        axios.get("api/sync").then((response) => {
-          console.log(response.data);
-        });
       } else {
         setShouldStart(false);
         history.push("/");
@@ -29,32 +32,41 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    const pusher = new Pusher("f2ccd03741a0cd0d0545", {
-      cluster: "ap2",
-    });
-    const channel = pusher.subscribe("messages");
-    channel.bind("inserted", function (newMessage) {
-      alert(newMessage);
-    });
-    return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-    };
-  }, [messages]);
-
-  useEffect(() => {
     if (shouldStart) {
-      const collection = db.collection("posts").orderBy("timeStamp", "desc");
-      collection.onSnapshot(
-        (snapshot) => {
-          setMessages(snapshot.docs.map((doc) => doc.data()));
-        },
-        (err) => {
-          console.log(`Encountered error: ${err}`);
-        }
-      );
+      axios.get("api/sync").then((response) => {
+        setMessages(response.data);
+        checkForUpdates();
+      });
     }
   }, [shouldStart]);
+
+  useEffect(() => {
+    if (ws) {
+      ws.onopen = () => {
+        console.log("connected");
+      };
+
+      ws.onerror = (err) => {
+        console.log(err + " occured");
+        window.location.reload();
+      };
+
+      ws.onclose = () => {
+        console.log("disconnected");
+      };
+    }
+  }, [ws]);
+
+  useEffect(() => {
+    if (messages) {
+      if (ws) {
+        ws.onmessage = (evt) => {
+          var newMessage = JSON.parse(evt.data);
+          setMessages([newMessage, ...messages]);
+        };
+      }
+    }
+  }, [messages, ws]);
 
   return (
     <div className="home">
