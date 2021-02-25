@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-const wss = new WebSocket.Server({ port: port });
+const wss = new WebSocket.Server({ port: 8080 });
 var wsocket = null;
 
 wss.on("connection", function connection(ws) {
