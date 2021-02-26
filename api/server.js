@@ -125,7 +125,9 @@ app.get("/api/deleteUsers", (req, res) => {
   });
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+const httpServer1 = createServer(app);
+
+httpServer1.listen(port, () => console.log(`Listening on port ${port}`));
 
 //socket.io
 var socketio = null;
