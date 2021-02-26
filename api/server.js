@@ -4,16 +4,25 @@ import mongoose from "mongoose";
 import Messages from "./dbTweets.js";
 import Users from "./dbUser.js";
 import cors from "cors";
-import { createServer } from "http";
-import { Server } from "socket.io";
+/* import { createServer } from "http";
+import { Server } from "socket.io"; */
+import Pusher from "pusher";
 
 const app = express();
-const app2 = express();
+/* const app2 = express(); */
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+const pusher = new Pusher({
+  appId: "1155160",
+  key: "f2ccd03741a0cd0d0545",
+  secret: "8282efa822a6efe71ce2",
+  cluster: "ap2",
+  useTLS: true,
+});
 
 /* const wss = new WebSocket.Server({ port: 8080 });
 var wsocket = null;
@@ -54,6 +63,23 @@ const db = mongoose.connection;
     );
   }
 }); */
+
+Messages.watch().on("change", (change) => {
+  if (change.operationType === "insert") {
+    const messageDetails = change.fullDocument;
+
+    pusher.trigger("messages", "inserted", {
+      message: JSON.stringify({
+        displayName: messageDetails.displayName,
+        userName: messageDetails.userName,
+        verified: messageDetails.verified,
+        text: messageDetails.text,
+        avatar: messageDetails.avatar,
+        image: messageDetails.image,
+      }),
+    });
+  }
+});
 
 // API calls
 
@@ -125,12 +151,12 @@ app.get("/api/deleteUsers", (req, res) => {
   });
 });
 
-const httpServer1 = createServer(app);
+/* const httpServer1 = createServer(app); */
 
-httpServer1.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => console.log(`Listening on port ${port}`));
 
 //socket.io
-var socketio = null;
+/* var socketio = null;
 
 const httpServer = createServer(app2);
 const io = new Server(httpServer, {
@@ -162,4 +188,4 @@ Messages.watch().on("change", (change) => {
   }
 });
 
-httpServer.listen(8080);
+httpServer.listen(8080); */

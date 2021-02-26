@@ -6,7 +6,8 @@ import { firebase } from "./firebase";
 import Sidebar from "./Sidebar";
 import Feed from "./Feed";
 import Widgets from "./Widgets";
-import { io } from "socket.io-client";
+/* import { io } from "socket.io-client"; */
+import Pusher from "pusher-js";
 
 function Home() {
   var history = useHistory();
@@ -15,7 +16,7 @@ function Home() {
   const [ws, setws] = useState(null);
   const [shouldStart, setShouldStart] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
+  /*  const [socket, setSocket] = useState(null);
 
   const checkForUpdates = () => {
     setSocket(io("wss://hello-chat.vercel.app"));
@@ -33,16 +34,27 @@ function Home() {
 
       socket.on("error", (error) => console.log(error));
     }
-  }, [socket]);
+  }, [socket]); */
 
   useEffect(() => {
+    var pusher = new Pusher("f2ccd03741a0cd0d0545", {
+      cluster: "ap2",
+    });
+
+    var channel = pusher.subscribe("messages");
+    channel.bind("inserted", function (data) {
+      setMessages([JSON.parse(data.message), ...messages]);
+    });
+  }, [messages]);
+
+  /*  useEffect(() => {
     if (socket) {
       socket.on("newMessage", (message) => {
         const newMessage = JSON.parse(message);
         setMessages([newMessage, ...messages]);
       });
     }
-  }, [socket, messages]);
+  }, [socket, messages]); */
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function (user) {
@@ -59,7 +71,6 @@ function Home() {
     if (shouldStart) {
       axios.get("api/sync").then((response) => {
         setMessages(response.data);
-        checkForUpdates();
       });
     }
   }, [shouldStart]);
