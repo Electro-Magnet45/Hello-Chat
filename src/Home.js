@@ -57,11 +57,10 @@ function Home() {
 
   useEffect(() => {
     if (shouldStart) {
-      /*  axios.get("api/sync").then((response) => {
+      axios.get("api/sync").then((response) => {
         setMessages(response.data);
         checkForUpdates();
-      }); */
-      checkForUpdates();
+      });
     }
   }, [shouldStart]);
 

@@ -157,6 +157,6 @@ Messages.watch().on("change", (change) => {
   }
 });
 
-httpServer.listen(8080);
+httpServer.listen(process.env.PORT || 8080);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
