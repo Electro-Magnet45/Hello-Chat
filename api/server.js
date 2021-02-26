@@ -8,11 +8,16 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 const app = express();
+const app2 = express();
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+app2.use(bodyParser.json());
+app2.use(bodyParser.urlencoded({ extended: true }));
+app2.use(cors());
 
 /* const wss = new WebSocket.Server({ port: 8080 });
 var wsocket = null;
@@ -124,11 +129,14 @@ app.get("/api/deleteUsers", (req, res) => {
   });
 });
 
+app.listen(port, () => console.log(`Listening on port ${port}`));
+const appServer = app2.listen(8080);
+
 //socket.io
 var socketio = null;
 
 const httpServer = createServer();
-const io = new Server(httpServer, {
+const io = new Server(appServer, {
   cors: {
     origin: "https://hello-chat.vercel.app",
     methods: ["GET", "POST"],
@@ -156,7 +164,3 @@ Messages.watch().on("change", (change) => {
     );
   }
 });
-
-httpServer.listen(process.env.PORT || 8080);
-
-app.listen(port, () => console.log(`Listening on port ${port}`));

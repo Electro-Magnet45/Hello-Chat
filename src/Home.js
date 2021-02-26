@@ -18,7 +18,7 @@ function Home() {
   const [socket, setSocket] = useState(null);
 
   const checkForUpdates = () => {
-    setSocket(io("https://hello-chat.vercel.app"));
+    setSocket(io("wss://hello-chat.vercel.app"));
   };
 
   useEffect(() => {
