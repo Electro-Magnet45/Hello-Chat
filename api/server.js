@@ -15,10 +15,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app2.use(bodyParser.json());
-app2.use(bodyParser.urlencoded({ extended: true }));
-app2.use(cors());
-
 /* const wss = new WebSocket.Server({ port: 8080 });
 var wsocket = null;
 
@@ -130,15 +126,14 @@ app.get("/api/deleteUsers", (req, res) => {
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
-const appServer = app2.listen(8080);
 
 //socket.io
 var socketio = null;
 
-const httpServer = createServer();
-const io = new Server(appServer, {
+const httpServer = createServer(app2);
+const io = new Server(httpServer, {
   cors: {
-    origin: "https://hello-chat.vercel.app",
+    origin: "*:*",
     methods: ["GET", "POST"],
   },
 });
@@ -164,3 +159,5 @@ Messages.watch().on("change", (change) => {
     );
   }
 });
+
+httpServer.listen(8080);
