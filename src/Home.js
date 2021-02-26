@@ -6,19 +6,43 @@ import { firebase } from "./firebase";
 import Sidebar from "./Sidebar";
 import Feed from "./Feed";
 import Widgets from "./Widgets";
+import { io } from "socket.io-client";
 
 function Home() {
   var history = useHistory();
   var URL = null;
-  const [ws, setws] = useState(null);
 
+  const [ws, setws] = useState(null);
   const [shouldStart, setShouldStart] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [socket, setSocket] = useState(null);
 
   const checkForUpdates = () => {
-    URL = "wss://hello-chat.vercel.app/";
-    setws(new WebSocket(URL));
+    setSocket(io("wss://hello-chat.vercel.app"));
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("connected");
+      });
+
+      socket.on("disconnect", () => {
+        console.log("disconnected"); // undefined
+      });
+
+      socket.on("error", (error) => console.log(error));
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("newMessage", (message) => {
+        const newMessage = JSON.parse(message);
+        setMessages([newMessage, ...messages]);
+      });
+    }
+  }, [socket, messages]);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function (user) {
@@ -40,7 +64,7 @@ function Home() {
     }
   }, [shouldStart]);
 
-  useEffect(() => {
+  /*  useEffect(() => {
     if (ws) {
       ws.onopen = () => {
         console.log("connected");
@@ -65,7 +89,7 @@ function Home() {
         };
       }
     }
-  }, [messages, ws]);
+  }, [messages, ws]); */
 
   return (
     <div className="home">

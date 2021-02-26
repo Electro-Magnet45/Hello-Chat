@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 import Messages from "./dbTweets.js";
 import Users from "./dbUser.js";
 import cors from "cors";
-import WebSocket from "ws";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -13,7 +14,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-const wss = new WebSocket.Server({ port: 8080 });
+/* const wss = new WebSocket.Server({ port: 8080 });
 var wsocket = null;
 
 wss.on("connection", function connection(ws) {
@@ -25,7 +26,7 @@ wss.on("connection", function connection(ws) {
       }
     });
   });
-});
+}); */
 
 const connection_url =
   "mongodb+srv://admin:admin@cluster0.hec08.mongodb.net/posts?retryWrites=true&w=majority";
@@ -37,7 +38,7 @@ mongoose.connect(connection_url, {
 
 const db = mongoose.connection;
 
-Messages.watch().on("change", (change) => {
+/* Messages.watch().on("change", (change) => {
   if (change.operationType === "insert") {
     const messageDetails = change.fullDocument;
     wsocket.send(
@@ -51,7 +52,7 @@ Messages.watch().on("change", (change) => {
       })
     );
   }
-});
+}); */
 
 // API calls
 
@@ -122,5 +123,40 @@ app.get("/api/deleteUsers", (req, res) => {
     }
   });
 });
+
+//socket.io
+var socketio = null;
+
+const httpServer = createServer();
+const io = new Server(httpServer, {
+  cors: {
+    origin: "https://hello-chat.vercel.app",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  socketio = socket;
+  console.log("connected");
+});
+
+Messages.watch().on("change", (change) => {
+  if (change.operationType === "insert") {
+    const messageDetails = change.fullDocument;
+    socketio.emit(
+      "newMessage",
+      JSON.stringify({
+        displayName: messageDetails.displayName,
+        userName: messageDetails.userName,
+        verified: messageDetails.verified,
+        text: messageDetails.text,
+        avatar: messageDetails.avatar,
+        image: messageDetails.image,
+      })
+    );
+  }
+});
+
+httpServer.listen(8080);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
